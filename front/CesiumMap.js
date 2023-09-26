@@ -61,11 +61,19 @@ class CesiumMap {
   
     async loadExternalFiles() {
       // Define the URLs of the JavaScript and CSS files
-      const cesiumJsUrl =
-        'http://cesium-dev.s3-website-us-east-1.amazonaws.com/cesium/worker-inline/Build/Cesium/Cesium.js';
-      const cesiumCssUrl =
-        'http://cesium-dev.s3-website-us-east-1.amazonaws.com/cesium/worker-inline/Build/Cesium/Widgets/widgets.css';
+     // const cesiumJsUrl =
+     //   'http://cesium-dev.s3-website-us-east-1.amazonaws.com/cesium/worker-inline/Build/Cesium/Cesium.js';
+     // const cesiumCssUrl =
+     //   'http://cesium-dev.s3-website-us-east-1.amazonaws.com/cesium/worker-inline/Build/Cesium/Widgets/widgets.css';
   
+    const cesiumJsUrl =
+        '/cesium/Cesium.js';
+      const cesiumCssUrl =
+        '/cesium/widgets.css';
+  
+
+
+
       // Create a script element for the Cesium JavaScript
       const cesiumJsScript = document.createElement('script');
       cesiumJsScript.src = cesiumJsUrl;
