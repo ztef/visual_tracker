@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <script src="js/jquery/jquery.min.js"></script>
+  <script src="viOne/tooltipHelpers.js"></script>
+
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="styles/jquery/ui/1.12.1/themes/base/jquery-ui.css">
+  
+ 
+  <style>
+    /* Style the tooltip div */
+    .tooltip {
+      position: absolute;
+      display: none;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border: 1px solid #ccc;
+      z-index: 9999; /* Ensure the tooltip is displayed above other elements */
+    }
+  </style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+
+
+<link rel="stylesheet" href="styles.css"> 
+
+
+</head>
+<body>
+
+
+  <div id="mapContainer"></div>
+  <div id="tooltip" class="tooltip"></div>
+  <div id="modelview"></div>
+  <div id="menu" class="menu">
+    <button id="showMobiles">Show Mobiles</button>
+  </div>
+  <div id="b" class="menu">
+    <button id="add">Add Cylinder</button>
+  </div>
+
+ 
+
+
+  <script type="module">
+    import { initializeFirebase } from "./firebaseListener.js";
+    import { MobileObjectModel } from "./model.js";
+    import { createGrid, updateGridOnNewData, updateGridOnDataUpdate } from "./grid.js";
+
+
+
+    import CesiumMap from './CesiumMap.js';
+    const cesiumMap = new CesiumMap();
+
+    const mobileObjectModel = new MobileObjectModel("mobile1", 25.6520, -100.3152);
+
+    cesiumMap.initializeCesium().then(()=>{
+
+
+      initializeFirebase(mobileObjectModel);
+      createGrid(mobileObjectModel);  
+       // Subscribe to the 'mobileAdded' event
+       mobileObjectModel.addEventListener('mobileAdded', (event) => {
+        const newMobile = event.detail;
+        console.log(`New mobile added:`, newMobile.data);
+        updateGridOnNewData(mobileObjectModel, newMobile);
+
+      
+
+        const cylinderId = newMobile.id; // Use the mobile object's ID as the cylinder ID
+        const initialLatitude = newMobile.data.positionCurrent._lat; // Use the mobile object's latitude
+        const initialLongitude = newMobile.data.positionCurrent._long; // Use the mobile object's longitude
+        addCyl(cylinderId, initialLatitude, initialLongitude);
+
+
+
+      });
+      mobileObjectModel.addEventListener('mobileUpdated', (event) => {
+                const updatedMobile = event.detail;
+                console.log(`Mobile ${updatedMobile.id} updated:`, updatedMobile.data);
+                updateGridOnDataUpdate(mobileObjectModel,updatedMobile);
+
+                const cylinderId = updatedMobile.id; // Use the mobile object's ID as the cylinder ID
+                const newLatitude = updatedMobile.data.positionCurrent._lat; // Use the mobile object's latitude
+                const newLongitude = updatedMobile.data.positionCurrent._long; // Use the mobile object's longitude
+                modCyl(cylinderId, newLatitude, newLongitude);
+
+
+
+      });
+
+
+
+       
+    })
+
+
+    vix_tt_formatToolTip("#modelview","Moviles",500);
+
+     // Create the MobileObjectModel instance
+    
+
+        
+
+
+    function addCyl(cylinderId, initialLatitude, initialLongitude){
+      cesiumMap.addCylinder(cylinderId, initialLatitude, initialLongitude);
+    }
+
+    function modCyl(cylinderId, initialLatitude, initialLongitude){
+      cesiumMap.updateCylinderPosition(cylinderId, initialLatitude, initialLongitude);
+    }
+
+
+    document.getElementById("add").onclick = () => {
+        
+            const cylinderId = "uniqueCylinderId"; // Unique ID for the cylinder
+            const initialLatitude = 25.6520; // Initial latitude
+            const initialLongitude = -100.3152; // Initial longitude
+
+          
+
+            cesiumMap.addCylinder(cylinderId, initialLatitude, initialLongitude);
+    }   
+
+
+    
+
+
+      
+
+      // Pass the model to initializeFirebase
+     
+
+
+     
+
+   
+
+
+      function toggleModelView() {
+              var modelView = document.getElementById("modelview");
+              if (modelView.style.visibility === "hidden" || modelView.style.visibility === "") {
+              modelView.style.visibility = "visible";
+              } else {
+              modelView.style.visibility = "hidden";
+              }
+      }
+
+
+      document.getElementById("showMobiles").onclick = toggleModelView;
+
+
+
+
+    
+
+   
+    
+
+   
+
+
+  </script>
+
+
+   
+
+
+</body>
+</html>

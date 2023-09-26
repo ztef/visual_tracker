@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Firebase Realtime Database</title>
+</head>
+<body>
+    <!-- Your HTML content here -->
+    
+    <script type="module">
+        // Import the initializeFirebase function from the module
+        import { initializeFirebase } from "./firebaseListener.js";
+
+        // Function to handle button click and initialize Firebase
+        function handleButtonClick() {
+            initializeFirebase();
+        }
+
+        // Attach the click event listener to the button
+        const initializeButton = document.getElementById("initializeButton");
+        initializeButton.addEventListener("click", handleButtonClick);
+    </script>
+
+    <div id="dataDisplay"></div> <!-- This div will display the received data -->
+
+    <!-- Add a button to initialize Firebase -->
+    <button id="initializeButton">Initialize Firebase</button>
+</body>
+</html>
