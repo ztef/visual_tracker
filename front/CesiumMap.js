@@ -1,6 +1,9 @@
 // CesiumMap.js
 
+ 
 
+
+ 
 
 class CesiumMap {
 
@@ -58,7 +61,7 @@ class CesiumMap {
      
      
     }
-  
+
     async loadExternalFiles() {
       // Define the URLs of the JavaScript and CSS files
      // const cesiumJsUrl =
@@ -67,9 +70,9 @@ class CesiumMap {
      //   'http://cesium-dev.s3-website-us-east-1.amazonaws.com/cesium/worker-inline/Build/Cesium/Widgets/widgets.css';
   
     const cesiumJsUrl =
-        '/cesium/Cesium.js';
+        '/Cesium/Cesium.js';
       const cesiumCssUrl =
-        '/cesium/widgets.css';
+        '/Cesium/Widgets/widgets.css';
   
 
 
@@ -97,7 +100,8 @@ class CesiumMap {
         }),
       ]);
     }
-
+  
+    
 
     handleCameraMove() {
         // Get the camera's altitude (distance from the ground)
