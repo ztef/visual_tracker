@@ -40,6 +40,7 @@ class MobileObjectModel extends EventTarget {
       const index = this.mobiles.findIndex((mobile) => mobile.id === id);
       if (index !== -1) {
         this.mobiles.splice(index, 1);
+        this.dispatchEvent(new CustomEvent('mobileDeleted', { detail: id }));
         return true; // Mobile deleted successfully
       }
       return false; // Mobile not found

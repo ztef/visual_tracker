@@ -51,9 +51,7 @@
   <script type="module">
     import { initializeFirebase } from "./firebaseListener.js";
     import { MobileObjectModel } from "./model.js";
-    import { createGrid, updateGridOnNewData, updateGridOnDataUpdate } from "./grid.js";
-
-
+    import { createGrid, updateGridOnNewData, updateGridOnDataUpdate, removeRowById } from "./grid.js";
 
     import CesiumMap from './CesiumMap.js';
     const cesiumMap = new CesiumMap();
@@ -66,12 +64,14 @@
       initializeFirebase(mobileObjectModel);
       createGrid(mobileObjectModel);  
        // Subscribe to the 'mobileAdded' event
+
+
+
        mobileObjectModel.addEventListener('mobileAdded', (event) => {
+
         const newMobile = event.detail;
         console.log(`New mobile added:`, newMobile.data);
         updateGridOnNewData(mobileObjectModel, newMobile);
-
-      
 
         const cylinderId = newMobile.id; // Use the mobile object's ID as the cylinder ID
         const initialLatitude = newMobile.data.positionCurrent._lat; // Use the mobile object's latitude
@@ -81,6 +81,7 @@
 
 
       });
+
       mobileObjectModel.addEventListener('mobileUpdated', (event) => {
                 const updatedMobile = event.detail;
                 console.log(`Mobile ${updatedMobile.id} updated:`, updatedMobile.data);
@@ -91,11 +92,17 @@
                 const newLongitude = updatedMobile.data.positionCurrent._long; // Use the mobile object's longitude
                 modCyl(cylinderId, newLatitude, newLongitude);
 
-
-
       });
 
+      mobileObjectModel.addEventListener('mobileDeleted', (event) => {
+                const deletedMobile = event.detail;
+                console.log(`Mobile ${deletedMobile} deleted:`, deletedMobile);
 
+                removeRowById(deletedMobile);
+
+                removeCyl(deletedMobile);      
+
+      });
 
        
     })
@@ -106,8 +113,6 @@
      // Create the MobileObjectModel instance
     
 
-        
-
 
     function addCyl(cylinderId, initialLatitude, initialLongitude){
       cesiumMap.addCylinder(cylinderId, initialLatitude, initialLongitude);
@@ -116,6 +121,12 @@
     function modCyl(cylinderId, initialLatitude, initialLongitude){
       cesiumMap.updateCylinderPosition(cylinderId, initialLatitude, initialLongitude);
     }
+
+
+    function removeCyl(id){
+      cesiumMap.removeCylinder(id);
+    }
+    
 
 
     document.getElementById("add").onclick = () => {
@@ -129,17 +140,6 @@
             cesiumMap.addCylinder(cylinderId, initialLatitude, initialLongitude);
     }   
 
-
-    
-
-
-      
-
-      // Pass the model to initializeFirebase
-     
-
-
-     
 
    
 

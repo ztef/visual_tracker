@@ -38,9 +38,12 @@ onSnapshot(myCollection, (snapshot) => {
         if (change.type === "added") {
             // Handle new document added
              
+           if(docData.status == "active") {
            
-            console.log("New Document Added:", docId, docData);
-            mobileObjectModel.updateOrAddMobile(docId, docData);
+                console.log("New Document Added:", docId, docData);
+                mobileObjectModel.updateOrAddMobile(docId, docData);
+           
+           }
    
             
        
@@ -49,9 +52,15 @@ onSnapshot(myCollection, (snapshot) => {
             // Handle document changed
             
              
-            console.log("Document Modified:", docId, docData);
-            mobileObjectModel.updateOrAddMobile(docId, docData);
-   
+            if(docData.status == "active") {
+
+             console.log("Document Modified:", docId, docData);
+             mobileObjectModel.updateOrAddMobile(docId, docData);
+            } else {
+                
+                console.log("Document Removed",docId);
+                mobileObjectModel.deleteMobile(docId);
+            }
            
      
         }

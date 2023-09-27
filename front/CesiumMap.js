@@ -228,6 +228,14 @@ class CesiumMap {
           cylinderEntity.position.setValue(cylinderCoordinates); // Update the specified cylinder entity's position
         }
     }
+
+    removeCylinder(id) {
+      const cylinderEntity = this.cylinderEntities[id]; // Get the cylinder entity by ID
+      if (cylinderEntity) {
+        this.viewer.entities.remove(cylinderEntity); // Remove the specified cylinder entity from the viewer
+        delete this.cylinderEntities[id]; // Remove the reference from the local collection
+      }
+    }
        
   
    

@@ -90,6 +90,22 @@ function createMobileHtml(id, data) {
       }
     }
   }
+
+  function removeRowById(id) {
+    const modelView = document.getElementById("modelview");
+    const table = modelView.querySelector("table");
   
-  export { createGrid, updateGridOnNewData, updateGridOnDataUpdate };
+    // Find the row corresponding to the provided ID
+    const rows = table.getElementsByTagName("tr");
+    for (const row of rows) {
+      const rowDataId = row.getAttribute("data-id");
+      if (rowDataId === id) {
+        // Remove the row from the table
+        table.removeChild(row);
+        break;
+      }
+    }
+  }
+  
+  export { createGrid, updateGridOnNewData, updateGridOnDataUpdate,  removeRowById };
   
