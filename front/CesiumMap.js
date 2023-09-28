@@ -7,7 +7,12 @@
 
 class CesiumMap {
 
-    constructor() {
+  constructor(controller) {
+    // ...
+    this.controller = controller;
+    this.controller.addObserver('mobileSelected', this.handleMobileSelected.bind(this));
+
+
       this.viewer = null;
       this.cylinderEntity = null;
       this.tooltipElement = null;
@@ -112,6 +117,15 @@ class CesiumMap {
 
         // Update the scale of all cylinders
         this.updateCylinderScale(scalingFactor);
+    }
+
+
+
+    handleMobileSelected(payload) {
+
+
+      console.log("MOBIL SELECCIONADO EN MAPA", payload);
+     
     }
 
     calculateScalingFactor(altitude) {

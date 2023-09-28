@@ -49,63 +49,96 @@
 
 
   <script type="module">
+
+
+
+    
     import { initializeFirebase } from "./firebaseListener.js";
-    import { MobileObjectModel } from "./model.js";
-    import { createGrid, updateGridOnNewData, updateGridOnDataUpdate, removeRowById } from "./grid.js";
+    import { MobileObjectModel } from "./Model.js";
 
+    import MobileGridView from './MobileGridView.js'; // Import the MobileGridView class
     import CesiumMap from './CesiumMap.js';
-    const cesiumMap = new CesiumMap();
 
-    const mobileObjectModel = new MobileObjectModel("mobile1", 25.6520, -100.3152);
+    import Controller from "./Controller.js";
 
-    cesiumMap.initializeCesium().then(()=>{
-
-
-      initializeFirebase(mobileObjectModel);
-      createGrid(mobileObjectModel);  
-       // Subscribe to the 'mobileAdded' event
+     const controller = new Controller();
+     const cesiumMap = new CesiumMap(controller);
+     const mobileObjectModel = new MobileObjectModel("mobile1", 25.6520, -100.3152);
 
 
 
-       mobileObjectModel.addEventListener('mobileAdded', (event) => {
 
-        const newMobile = event.detail;
-        console.log(`New mobile added:`, newMobile.data);
-        updateGridOnNewData(mobileObjectModel, newMobile);
+    // Create the instance after the DOM is ready
+    document.addEventListener("DOMContentLoaded", function () {
 
-        const cylinderId = newMobile.id; // Use the mobile object's ID as the cylinder ID
-        const initialLatitude = newMobile.data.positionCurrent._lat; // Use the mobile object's latitude
-        const initialLongitude = newMobile.data.positionCurrent._long; // Use the mobile object's longitude
-        addCyl(cylinderId, initialLatitude, initialLongitude);
+        
+         const mobileGridView = new MobileGridView(controller);
+        
+         cesiumMap.initializeCesium().then(()=>{
 
 
+                initializeFirebase(mobileObjectModel);
 
-      });
 
-      mobileObjectModel.addEventListener('mobileUpdated', (event) => {
-                const updatedMobile = event.detail;
-                console.log(`Mobile ${updatedMobile.id} updated:`, updatedMobile.data);
-                updateGridOnDataUpdate(mobileObjectModel,updatedMobile);
 
-                const cylinderId = updatedMobile.id; // Use the mobile object's ID as the cylinder ID
-                const newLatitude = updatedMobile.data.positionCurrent._lat; // Use the mobile object's latitude
-                const newLongitude = updatedMobile.data.positionCurrent._long; // Use the mobile object's longitude
-                modCyl(cylinderId, newLatitude, newLongitude);
+                
 
-      });
 
-      mobileObjectModel.addEventListener('mobileDeleted', (event) => {
-                const deletedMobile = event.detail;
-                console.log(`Mobile ${deletedMobile} deleted:`, deletedMobile);
+            
+                // Subscribe to the 'mobileAdded' event
+                mobileObjectModel.addEventListener('mobileAdded', (event) => {
 
-                removeRowById(deletedMobile);
+                  const newMobile = event.detail;
+                  console.log(`New mobile added:`, newMobile.data);
+                  //updateGridOnNewData(mobileObjectModel, newMobile);
+                  mobileGridView.addMobile(newMobile.id, newMobile.data);
+              
 
-                removeCyl(deletedMobile);      
+                  const cylinderId = newMobile.id; // Use the mobile object's ID as the cylinder ID
+                  const initialLatitude = newMobile.data.positionCurrent._lat; // Use the mobile object's latitude
+                  const initialLongitude = newMobile.data.positionCurrent._long; // Use the mobile object's longitude
+                  addCyl(cylinderId, initialLatitude, initialLongitude);
 
-      });
+
+
+                });
+
+                mobileObjectModel.addEventListener('mobileUpdated', (event) => {
+                          const updatedMobile = event.detail;
+                          console.log(`Mobile ${updatedMobile.id} updated:`, updatedMobile.data);
+                        // updateGridOnDataUpdate(mobileObjectModel,updatedMobile);
+
+                          mobileGridView.updateMobile(updatedMobile.id, updatedMobile.data);
+              
+
+                          const cylinderId = updatedMobile.id; // Use the mobile object's ID as the cylinder ID
+                          const newLatitude = updatedMobile.data.positionCurrent._lat; // Use the mobile object's latitude
+                          const newLongitude = updatedMobile.data.positionCurrent._long; // Use the mobile object's longitude
+                          modCyl(cylinderId, newLatitude, newLongitude);
+
+                });
+
+                mobileObjectModel.addEventListener('mobileDeleted', (event) => {
+                          const deletedMobile = event.detail;
+                          console.log(`Mobile ${deletedMobile} deleted:`, deletedMobile);
+
+                          //removeRowById(deletedMobile);
+                          mobileGridView.removeMobile(deletedMobile);
+              
+
+
+                          removeCyl(deletedMobile);      
+
+                });
 
        
-    })
+          })
+
+   
+   
+   
+    });
+
 
 
     vix_tt_formatToolTip("#modelview","Moviles",500);
@@ -158,13 +191,6 @@
 
 
 
-
-    
-
-   
-    
-
-   
 
 
   </script>
