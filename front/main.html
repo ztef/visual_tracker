@@ -63,7 +63,7 @@
 
      const controller = new Controller();
      const cesiumMap = new CesiumMap(controller);
-     const mobileObjectModel = new MobileObjectModel("mobile1", 25.6520, -100.3152);
+     const mobileObjectModel = new MobileObjectModel(controller);
 
 
 
@@ -80,11 +80,8 @@
                 initializeFirebase(mobileObjectModel);
 
 
-
                 
-
-
-            
+                /*
                 // Subscribe to the 'mobileAdded' event
                 mobileObjectModel.addEventListener('mobileAdded', (event) => {
 
@@ -130,6 +127,7 @@
                           removeCyl(deletedMobile);      
 
                 });
+                */
 
        
           })

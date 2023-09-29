@@ -3,7 +3,9 @@ class MobileGridView {
     // ...
     this.controller = controller;
     this.controller.addObserver('mobileSelected', this.handleMobileSelected.bind(this));
-
+    this.controller.addObserver('mobileAdded', this.addMobile.bind(this));
+    this.controller.addObserver('mobileUpdated', this.updateMobile.bind(this));
+    this.controller.addObserver('mobileDeleted', this.removeMobile.bind(this));
 
       console.log("Constructor");
       this.modelView = document.getElementById("modelview");
@@ -78,7 +80,12 @@ class MobileGridView {
       return html;
     }
    
-    addMobile(id, data) {
+    addMobile(newMobile) {
+
+      console.log("GRID : NUEVO SI LLEGA",newMobile);
+
+      let id = newMobile.id;
+      let data = newMobile.data;
 
       console.log("Agregando TR");
       const row = document.createElement("tr");
@@ -95,7 +102,12 @@ class MobileGridView {
       this.table.appendChild(row);
     }
   
-    updateMobile(id, updatedData) {
+    updateMobile(mobile) {
+
+      console.log("GRID : SI LLEGA", mobile);
+
+      let id = mobile.id;
+      let updatedData = mobile.data;
 
 
       // Find the row corresponding to the updated data

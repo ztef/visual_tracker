@@ -1,6 +1,8 @@
-class MobileObjectModel extends EventTarget {
-    constructor() {
-      super(); // Call the EventTarget constructor to enable event handling
+class MobileObjectModel  {
+    constructor(controller) {
+      
+
+      this.controller = controller;
   
       // Initialize an empty array to store mobile objects
       this.mobiles = [];
@@ -9,11 +11,12 @@ class MobileObjectModel extends EventTarget {
     // Update or add a mobile object
     updateOrAddMobile(id, data) {
       const existingMobile = this.mobiles.find((mobile) => mobile.id === id);
+
       if (existingMobile) {
         // Update the existing mobile object
         existingMobile.data = data;
-        this.dispatchEvent(new CustomEvent('mobileUpdated', { detail: existingMobile }));
- 
+         
+        this.controller.triggerMobileUpdated(existingMobile.data);
          
         return existingMobile;
       } else {
@@ -24,7 +27,7 @@ class MobileObjectModel extends EventTarget {
            
         };
         this.mobiles.push(newMobile);
-        this.dispatchEvent(new CustomEvent('mobileAdded', { detail: newMobile }));
+        this.controller.triggerMobileAdded(newMobile);
 
         return newMobile;
       }
@@ -40,7 +43,8 @@ class MobileObjectModel extends EventTarget {
       const index = this.mobiles.findIndex((mobile) => mobile.id === id);
       if (index !== -1) {
         this.mobiles.splice(index, 1);
-        this.dispatchEvent(new CustomEvent('mobileDeleted', { detail: id }));
+        
+        this.controller.triggerMobileDeleted(id);
         return true; // Mobile deleted successfully
       }
       return false; // Mobile not found
