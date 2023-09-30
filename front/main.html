@@ -12,14 +12,46 @@
  
   <style>
     /* Style the tooltip div */
-    .tooltip {
-      position: absolute;
-      display: none;
-      background-color: rgba(255, 255, 255, 0.9);
-      padding: 10px;
-      border: 1px solid #ccc;
-      z-index: 9999; /* Ensure the tooltip is displayed above other elements */
+    #mapContainer {
+  position: relative; /* Change to relative */
+}
+
+/* Style the tooltip div */
+.tooltip {
+  position: absolute; /* Change to absolute */
+  top: 0; /* Align with the top of mapContainer */
+  left: 0;
+  width: 600px;
+  height: 200px;
+  display: none;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  border: 1px solid #ccc;
+  z-index: 9999;
+}
+
+.overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.99); /* Semi-transparent background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999; /* Ensure it's above other elements */
     }
+
+    /* Style for the start button */
+    .start-button {
+      padding: 15px 30px;
+      background-color: #3498db;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+   
   </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
@@ -35,8 +67,13 @@
 <body>
 
 
+  <div id="overlay" class="overlay" >
+    <button id="startButton" class="start-button">Start</button>
+  </div>
+
   <div id="mapContainer"></div>
-  <div id="tooltip" class="tooltip"></div>
+ <div id="tooltip" class="tooltip"></div>
+  
   <div id="modelview"></div>
   <div id="menu" class="menu">
     <button id="showMobiles">Show Mobiles</button>
@@ -52,88 +89,47 @@
 
 
 
+    import MapFactory from "./MapFactory.js";
+    import RemoteListenerFactory from "./RemoteListenerFactory.js";
     
-    import { initializeFirebase } from "./firebaseListener.js";
     import { MobileObjectModel } from "./Model.js";
 
-    import MobileGridView from './MobileGridView.js'; // Import the MobileGridView class
-    import CesiumMap from './CesiumMap.js';
-
+    import MobileGridView from './MobileGridView.js'; 
+ 
     import Controller from "./Controller.js";
+    const controller = new Controller();
 
-     const controller = new Controller();
-     const cesiumMap = new CesiumMap(controller);
+     const mapFactory = new MapFactory();
+     const remoteListenerFactory = new RemoteListenerFactory();
+
+ 
+     const map = mapFactory.createMap("Cesium", controller);
      const mobileObjectModel = new MobileObjectModel(controller);
+    
+     const remoteListener = remoteListenerFactory.createRemoteListener("Firebase",mobileObjectModel);
 
 
 
-
-    // Create the instance after the DOM is ready
+    
     document.addEventListener("DOMContentLoaded", function () {
-
         
          const mobileGridView = new MobileGridView(controller);
         
-         cesiumMap.initializeCesium().then(()=>{
+         map.load().then(()=>{
 
-
-                initializeFirebase(mobileObjectModel);
-
-
-                
-                /*
-                // Subscribe to the 'mobileAdded' event
-                mobileObjectModel.addEventListener('mobileAdded', (event) => {
-
-                  const newMobile = event.detail;
-                  console.log(`New mobile added:`, newMobile.data);
-                  //updateGridOnNewData(mobileObjectModel, newMobile);
-                  mobileGridView.addMobile(newMobile.id, newMobile.data);
-              
-
-                  const cylinderId = newMobile.id; // Use the mobile object's ID as the cylinder ID
-                  const initialLatitude = newMobile.data.positionCurrent._lat; // Use the mobile object's latitude
-                  const initialLongitude = newMobile.data.positionCurrent._long; // Use the mobile object's longitude
-                  addCyl(cylinderId, initialLatitude, initialLongitude);
-
-
-
-                });
-
-                mobileObjectModel.addEventListener('mobileUpdated', (event) => {
-                          const updatedMobile = event.detail;
-                          console.log(`Mobile ${updatedMobile.id} updated:`, updatedMobile.data);
-                        // updateGridOnDataUpdate(mobileObjectModel,updatedMobile);
-
-                          mobileGridView.updateMobile(updatedMobile.id, updatedMobile.data);
-              
-
-                          const cylinderId = updatedMobile.id; // Use the mobile object's ID as the cylinder ID
-                          const newLatitude = updatedMobile.data.positionCurrent._lat; // Use the mobile object's latitude
-                          const newLongitude = updatedMobile.data.positionCurrent._long; // Use the mobile object's longitude
-                          modCyl(cylinderId, newLatitude, newLongitude);
-
-                });
-
-                mobileObjectModel.addEventListener('mobileDeleted', (event) => {
-                          const deletedMobile = event.detail;
-                          console.log(`Mobile ${deletedMobile} deleted:`, deletedMobile);
-
-                          //removeRowById(deletedMobile);
-                          mobileGridView.removeMobile(deletedMobile);
-              
-
-
-                          removeCyl(deletedMobile);      
-
-                });
-                */
-
-       
+                //initializeFirebase(mobileObjectModel);
+                //remoteListener.start();
           })
 
-   
-   
+          // Get references to the div elements
+          //const divs = [
+         //   document.getElementById("cesium-viewer-bottom"),
+          //  document.getElementById("cesium-viewer-animation-container"),
+           
+          //];
+
+         
+
    
     });
 
@@ -141,22 +137,6 @@
 
     vix_tt_formatToolTip("#modelview","Moviles",500);
 
-     // Create the MobileObjectModel instance
-    
-
-
-    function addCyl(cylinderId, initialLatitude, initialLongitude){
-      cesiumMap.addCylinder(cylinderId, initialLatitude, initialLongitude);
-    }
-
-    function modCyl(cylinderId, initialLatitude, initialLongitude){
-      cesiumMap.updateCylinderPosition(cylinderId, initialLatitude, initialLongitude);
-    }
-
-
-    function removeCyl(id){
-      cesiumMap.removeCylinder(id);
-    }
     
 
 
@@ -168,11 +148,11 @@
 
           
 
-            cesiumMap.addCylinder(cylinderId, initialLatitude, initialLongitude);
+            map.addCylinder(cylinderId, initialLatitude, initialLongitude);
     }   
 
 
-   
+  
 
 
       function toggleModelView() {
@@ -181,17 +161,39 @@
               modelView.style.visibility = "visible";
               } else {
               modelView.style.visibility = "hidden";
+              hidebottom();
+
+              
+
+            
               }
-      }
+        }
+
+        function hidebottom(){
+
+          const div = document.querySelector(".cesium-viewer-bottom");
+              if (div) {
+                div.style.display = "none";
+              }
+
+              const div1 = document.querySelector(".cesium-viewer-animationContainer");
+              if (div1) {
+                div1.style.display = "none";
+              }
+
+        }
 
 
       document.getElementById("showMobiles").onclick = toggleModelView;
 
-
-
-
+      document.getElementById("startButton").addEventListener("click", function() {
+          hidebottom();
+          document.getElementById("overlay").style.display = "none";
+        });
 
   </script>
+
+
 
 
    

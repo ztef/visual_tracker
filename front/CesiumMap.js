@@ -1,16 +1,17 @@
 // CesiumMap.js
 
+import Map from './Map.js'; 
  
 
 
- 
-
-class CesiumMap {
+class CesiumMap extends Map {
 
   constructor(controller) {
     // ...
+
+    super();
     this.controller = controller;
-    this.controller.addObserver('mobileSelected', this.handleMobileSelected.bind(this));
+    this.controller.addObserver('mobileSelected', this.handleMobileSelectedOutside.bind(this));
     this.controller.addObserver('mobileAdded', this.addMobile.bind(this));
     this.controller.addObserver('mobileUpdated', this.updateMobile.bind(this));
     this.controller.addObserver('mobileDeleted', this.removeMobile.bind(this));
@@ -25,12 +26,11 @@ class CesiumMap {
 
       this.cylinderEntities = [];
       
-       
-     
+    
       
     }
   
-    async initializeCesium() {
+    async load() {
 
       await this.loadExternalFiles();
   
@@ -43,6 +43,8 @@ class CesiumMap {
 
             this.viewer = new Cesium.Viewer('mapContainer', {
                 terrain: Cesium.Terrain.fromWorldTerrain(),
+                pickEnabled: true,
+                timeline: false,
             });
   
             this.viewer.camera.flyTo({
@@ -63,10 +65,20 @@ class CesiumMap {
             // Add Cesium OSM Buildings, a global 3D buildings layer.
             const buildingTileset = await Cesium.createOsmBuildingsAsync();
             this.viewer.scene.primitives.add(buildingTileset);
-          
-            
-  
-     
+
+           
+
+            this.viewer.selectedEntityChanged.addEventListener(function(selectedEntity) {
+              if (Cesium.defined(selectedEntity)) {
+                  if (Cesium.defined(selectedEntity.name)) {
+                    console.log('Selected ' + selectedEntity.name);
+                  } else {
+                    console.log('Unknown entity selected.');
+                  }
+              } else {
+                console.log('Deselected.');
+              }
+            });
      
     }
 
@@ -119,49 +131,66 @@ class CesiumMap {
         const scalingFactor = this.calculateScalingFactor(cameraAltitude);
 
         // Update the scale of all cylinders
-        this.updateCylinderScale(scalingFactor);
+        //this.updateCylinderScale(scalingFactor);
     }
 
 
+    /*
+    handleClick(event) {
+      console.log("CLICK");
+      // Get the mouse coordinates
+      const mousePosition = new Cesium.Cartesian2(event.clientX, event.clientY);
+    
+      // Perform the picking operation
+      const pickedObject = this.viewer.scene.pick(mousePosition);
+    
+      if (pickedObject !== undefined) {
+        // Check if an object was picked and if it's an entity (cylinder)
+        if (pickedObject.id instanceof Cesium.Entity) {
+          // Handle the picked object, e.g., get its properties or take actions
+          this.handleCylinderSelection(pickedObject.id);
+        }
+      }
+    }
+    */
+    
+    /*
+    handleCylinderSelection(cylinderEntity) {
+      // Access the unique ID or other relevant information from the entity
+      const uniqueId = cylinderEntity.id;
+    
+      // Use the unique ID to access data from your cylinderEntities array
+      const cylinderData = this.cylinderEntities[uniqueId];
+    
+      if (cylinderData) {
+        // Do something with the cylinderData, such as displaying it to the user
+        console.log("Selected Cylinder Data:", cylinderData);
+      }
+    }
+    */
+    
 
-    handleMobileSelected(payload) {
+
+    handleMobileSelectedOutside(payload) {
       console.log("Cylinder Entity selected:", payload);
     
       // Check if the payload has the ID
       if (payload.id && this.cylinderEntities[payload.id]) {
+
         const cylinderEntity = this.cylinderEntities[payload.id];
-    
-        // Get the position of the selected cylinder entity
-        const cylinderPosition = cylinderEntity.position.getValue(Cesium.JulianDate.now());
-    
-        // Convert the position to latitude and longitude
-        const cartographic = Cesium.Cartographic.fromCartesian(cylinderPosition);
-        const latitude = Cesium.Math.toDegrees(cartographic.latitude);
-        const longitude = Cesium.Math.toDegrees(cartographic.longitude);
-    
-        // Define the destination for the camera
-        const originalDestination = Cesium.Cartesian3.fromDegrees(longitude, latitude, 2000);
-    
-        // Calculate a new destination 1500 meters south of the original destination
-        const southDestination = Cesium.Cartesian3.fromDegrees(
-          Cesium.Math.toDegrees(cartographic.longitude),
-          Cesium.Math.toDegrees(cartographic.latitude) - 0.02, // Adjust this value as needed
-          2500
-        );
-    
-        // Fly the camera to the new destination
-        this.viewer.camera.flyTo({
-          destination: southDestination,
-          orientation: {
-            heading: Cesium.Math.toRadians(0.0),
-            pitch: Cesium.Math.toRadians(-30.0),
-            roll: 0.0,
-          },
-        });
+
+        if(cylinderEntity){
+          this.viewer.flyTo(cylinderEntity);
+        }
+
+       
+
       } else {
         console.log("Cylinder Entity not found by ID:", payload.id);
       }
     }
+
+   
     
    
     
@@ -218,6 +247,7 @@ class CesiumMap {
       `;
   
       this.cylinderEntity = this.viewer.entities.add({
+       
         position: cylinderCoordinates,
         cylinder: {
           length: 1000,
@@ -254,6 +284,7 @@ class CesiumMap {
       
         const cylinderEntity = this.viewer.entities.add({
           position: cylinderCoordinates,
+          name: "Mobile "+ id,
           cylinder: {
             length: 1000,
             topRadius: 10,
@@ -261,6 +292,33 @@ class CesiumMap {
             material: Cesium.Color.RED,
           },
         });
+
+        cylinderEntity.description =
+  '\
+<img\
+  width="50%"\
+  style="float:left; margin: 0 1em 1em 0;"\
+  src="/docs/tutorials/creating-entities/Flag_of_Wyoming.svg"/>\
+<p>\
+  Wyoming is a state in the mountain region of the Western \
+  United States.\
+</p>\
+<p>\
+  Wyoming is the 10th most extensive, but the least populous \
+  and the second least densely populated of the 50 United \
+  States. The western two thirds of the state is covered mostly \
+  with the mountain ranges and rangelands in the foothills of \
+  the eastern Rocky Mountains, while the eastern third of the \
+  state is high elevation prairie known as the High Plains. \
+  Cheyenne is the capital and the most populous city in Wyoming, \
+  with a population estimate of 63,624 in 2017.\
+</p>\
+<p>\
+  Source: \
+  <a style="color: WHITE"\
+    target="_blank"\
+    href="http://en.wikipedia.org/wiki/Wyoming">Wikpedia</a>\
+</p>';
       
         this.cylinderEntities[id] = cylinderEntity; // Store the cylinder entity with its ID
       
