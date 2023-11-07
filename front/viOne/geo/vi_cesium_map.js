@@ -17,6 +17,8 @@ class vi_CesiumMap extends vi_Map {
     // ...
 
     super(controller);
+
+    this.previousCameraAltitude = null; 
     
     
       
@@ -123,16 +125,26 @@ class vi_CesiumMap extends vi_Map {
     
 
     handleCameraMove() {
-        // Get the camera's altitude (distance from the ground)
-        const cameraAltitude = this.viewer.camera.positionCartographic.height;
-
-        // Calculate a scaling factor based on the camera's altitude
-        const scalingFactor = this.calculateScalingFactor(cameraAltitude);
-
-        // Update the scale of all cylinders
-        //this.updateCylinderScale(scalingFactor);
-    }
-
+      // Get the camera's altitude (distance from the ground)
+      const cameraAltitude = this.viewer.camera.positionCartographic.height;
+  
+      // Define a threshold or delta value for significant change
+      const threshold = 100; // Adjust this value as needed
+  
+      // Check if cameraAltitude has changed significantly
+      if (this.previousCameraAltitude === null || Math.abs(cameraAltitude - this.previousCameraAltitude) >= threshold) {
+          // Calculate a scaling factor based on the camera's altitude
+          const scalingFactor = this.calculateScalingFactor(cameraAltitude);
+  
+          console.log("ALTITUD : ", cameraAltitude, "FACTOR : ", scalingFactor);
+  
+          // Update the scale of all cylinders
+          this.updateObjectsScale(scalingFactor);
+  
+          // Update the previousCameraAltitude
+          this.previousCameraAltitude = cameraAltitude;
+      }
+  }
 
     
 
@@ -158,12 +170,12 @@ class vi_CesiumMap extends vi_Map {
     
    
     
-    calculateScalingFactor(altitude) {
-        // Define a scaling function based on your requirements
-        // Adjust the scaling logic to fit your specific use case
-        // For example, you can use a simple linear function:
-        // Scale increases as altitude increases
-        return Math.min(1.0 + (altitude - 1000) * 0.01, 2.0);
+    calculateScalingFactor(x) {
+      const m = 9 / 9950; // Slope
+      const b = 154 / 199; // Y-intercept
+    
+      const y = m * x + b;
+      return y;
     }
 
     updateObjectsScale(scalingFactor) {
