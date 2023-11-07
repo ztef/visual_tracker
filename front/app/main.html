@@ -81,6 +81,9 @@
       const cedisDataSource = new vi_DataSource('GoogleSheet', './config/googlesheetconfig.json');
 
 
+      var mobilesRemoteListener;
+      var cedisRemoteListener;
+
      
    // Cuando carga el DOM completo
     
@@ -93,8 +96,8 @@
         
       // Carga Mapa y activa listener continuo
       map.load().then(()=>{
-            const mobilesRemoteListener = remoteListenerFactory.createRemoteListener(tripDataSource,objectModel);
-            const cedisRemoteListener = remoteListenerFactory.createRemoteListener(cedisDataSource,objectModel);
+            mobilesRemoteListener = remoteListenerFactory.createRemoteListener(tripDataSource,objectModel);
+            cedisRemoteListener = remoteListenerFactory.createRemoteListener(cedisDataSource,objectModel);
           })
    
     });
@@ -122,7 +125,21 @@
 
               }
               if(object.collection == 'trips') {
-                console.log("TRIP SELECCIONADO");
+
+                mobilesRemoteListener.getDocument('units','82hBiiCS1dKo14spE3AE')
+                .then((documentData) => {
+                  if (documentData) {
+                    // Handle the retrieved document data here
+                    console.log('Document Data:', documentData);
+                  } else {
+                    console.log('Document not found');
+                  }
+                })
+                .catch((error) => {
+                  console.error('Error getting document:', error);
+                });
+
+
               } 
 
 
