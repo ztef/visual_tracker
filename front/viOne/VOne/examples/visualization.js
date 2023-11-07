@@ -19,36 +19,24 @@ class Visualization{
 
         this.glScene = sceneCreator.createScene({
             // bgColor: 0xffffff,
-            glRenderer: THREE.WebGLRenderer,
+            glRenderer: THREE.CSS3DRenderer,
             bgAlpha: 0.0,
             controls: THREE.OrbitControls,
+            parentType: 'div',
             containerId: 'detailView',
             controlsConfig: controlsConfig,
-            // parentType: 'div',
             verticalDegFOV: 25,
             bodyBGAlpha: 1,
+            width: $('detail').width(),
+            height: $('detail').height()
         });
 
-        let canvasWidth = $('#detail').width();
-        let canvasHeight = $('#detail').height()
-
-        let voneCanvas = $('canvas').last();
-
-        // voneCanvas.width(canvasWidth);
-        // voneCanvas.height(canvasHeight);
-
-        voneCanvas.css({ position: 'absolute', left: '0', top: '35px', height: `${canvasHeight - 35}px` });
-
-        $('#detail').append(voneCanvas);
 
         $('#detail').append($('#detailView'));
 
-
-
-
         let textureCanvas = document.createElement('canvas');
-        textureCanvas.width = 128;
-        textureCanvas.height = 128;
+            textureCanvas.width = 128;
+            textureCanvas.height = 128;
         textureCanvas.background = 'transparent';
 
         let context = textureCanvas.getContext('2d');

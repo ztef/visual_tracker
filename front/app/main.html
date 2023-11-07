@@ -1,4 +1,18 @@
 <!DOCTYPE html>
+
+<!-- 
+    
+
+    VISUAL INTERACTION SYSTEMS
+
+    Esqueleto generico para aplicaciones.
+
+
+-->
+
+
+
+
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -45,45 +59,45 @@
 <body>
 
 
-  <!-- 
-    This is a multi-line comment.
-    You can add multiple lines of explanation or notes here.
-    -->
 
-
-  <div id="overlay" class="overlay" >
-    <button id="startButton" class="start-button">Start</button>
+  <div class="logo-container">
+    <img src="./assets/lacomer.png" alt="Logo">
   </div>
 
+
+
+   <!-- CONTENEDOR DE MAPA -->
   <div id="mapContainer"></div>
 
-  <div id="tooltip" class="tooltip"></div>
   
-  <div id="gridview"></div> 
+  <!-- MENU DE OBJETOS DE ESTUDIO -->
+  <div id="objects_menu"></div> 
 
-  <div id="menu" class="menu">
-    <button id="showMobiles">Show Mobiles</button>
+   
+  <!-- VENTANA DE DETALLE AL SELECCIONAR UN OBJETO DE ESTUDIO -->
+
+  <div id="detail" style="width: 800px; height: 600px;" >
   </div>
 
- <div id="detail"></div>
-
-
- 
-
-
+  <!-- MODULO PRINCIPAL -->
   <script type="module">
 
 
-
-    /*
-
-      IMPORTA LIBRERIAS viONE
-
-    */
+    // Formatea div de objetos para que sea una ventana :
+    vix_tt_formatToolTip("#objects_menu","Objetos",500,350);
+    vix_positionDiv("objects_menu",10,10);
 
 
+    // Formatea el DIV de detalle como una ventana flotante :
+   
+    //vix_appendDivToParent("detail", "detailContainer")
+
+    vix_tt_formatToolTip("#detail","Detalles",800,600);
+
+    
+
+    //  IMPORTA LIBRERIAS viONE
     import { vi_ObjectModel, vi_MapFactory, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '/viOne/all.js';
-
 
 
    // CREA UN CONTROLADOR
@@ -99,7 +113,6 @@
    // CREA UNA FABRICA PARA LISTENERS REMOTOS   
       const remoteListenerFactory = new vi_RemoteListenerFactory();
 
-
    // CREA UN DATASOURCE para trips
       const tripDataSource = new vi_DataSource('Firebase', './config/firebaseConfig.json');
 
@@ -107,18 +120,21 @@
       const cedisDataSource = new vi_DataSource('GoogleSheet', './config/googlesheetconfig.json');
 
 
+   // DECLARA LISTENERS PARA Mobiles y CEDIS   
       var mobilesRemoteListener;
       var cedisRemoteListener;
 
      
-   // Cuando carga el DOM completo
-    
+   // Cuando carga el DOM completo    
     document.addEventListener("DOMContentLoaded", function () {
         
-      // Genera ventana de GRID
-      vix_tt_formatToolTip("#gridview","Objetos",500,350);
+     
 
-      const gridView = new vi_ObjectGridView('gridview',controller, headerFunction, rowFunction);
+
+
+      // Usa el div para que el controlador actualice los datos de los objetos de manera continua en una tabla dentro del div
+      // Nota :  Usa funciones auxiliares para detallar el header y las filas de la tabla
+      const gridView = new vi_ObjectGridView('objects_menu',controller, headerFunction, rowFunction);
         
       // Carga Mapa y activa listener continuo
       map.load().then(()=>{
@@ -134,22 +150,36 @@
     controller.addObserver("objectSelected",BLOC);
 
 
-    // BLOC : BUSINESS LOGIC 
+    /*
+    
+          BLOC PRINCIPAL : BUSINESS LOGIC 
+
+
+          Recibe eventos y toma decisiones
+
+    */
 
     function BLOC(event, data){
 
         var action;
 
         switch (event) {
+
+
+        // Al seleccionar un objeto :  
         case 'objectSelected':
 
 
               let object = objectModel.readObject(data.id);
           
+
+              // Si se trata de un objeto estatico :
               if(object.collection == 'cedis') {
                 console.log("CEDIS SELECCIONADO");
 
               }
+
+              // Si se trata de un objeto dinamico
               if(object.collection == 'trips') {
 
                 mobilesRemoteListener.getDocument('units','82hBiiCS1dKo14spE3AE')
@@ -180,6 +210,15 @@
     }
 
 
+
+    /* 
+    
+        Funciones Auxiliares 
+
+    */
+
+
+    // Detalla el header de la tabla
     function headerFunction(){
 
       const html = `
@@ -197,33 +236,25 @@
     }
 
 
-
-
-    /*
-
-      Funcion que detalla el contenido de cada fila en la tbla de seleccion de mobiles
-
-    */
+    // Detalla el contenido de cada fila en la tabla de seleccion de objetos
 
     function rowFunction(id, collection, data){
-      // Extract the significant data fields
+      
+      // Extrae los campos a utilizar 
       const { destination, tripState, unit } = data;
   
-      // Determine the circle color based on tripState
+      // Usa un circulo de color basado en el campo trip state
       let circleColor = "red"; // Default circle color
   
       if (tripState === "loading") {
-        circleColor = "green"; // Set circle color to green for "In Progress" state
+        circleColor = "green"; 
       } else if (tripState === "Completed") {
-        circleColor = "blue"; // Set circle color to blue for "Completed" state
-      } // Add more conditions for other states if needed
+        circleColor = "blue"; 
+      }  
   
-      // Create an HTML string for the mobile with significant data and white text color
+      // Crea HTML de detalle
      
-
       const html = `
-  
-    
       <td>
         <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
           <circle cx="10" cy="10" r="8" fill="${circleColor}" />
@@ -234,61 +265,17 @@
       <td style="color: white;">Mobile ${id}</td>
       <td style="color: white;">Destino : ${destination}</td>
       <td style="color: white;">Trip State: ${tripState}</td>
-      <td style="color: white;">Unidad : ${unit}</td>
-    
-  
-`;
+      <td style="color: white;">Unidad : ${unit}</td>  
+      `;
 
-return (html);
+      return (html);
 
     }
 
 
    
-    vix_tt_formatToolTip("#detail","Detalle",800,600);
 
-
-
-
-      function toggleModelView() {
-              var modelView = document.getElementById("modelview");
-              if (modelView.style.visibility === "hidden" || modelView.style.visibility === "") {
-              modelView.style.visibility = "visible";
-              } else {
-              modelView.style.visibility = "hidden";
-              hidebottom();
-
-              
-
-            
-              }
-        }
-
-        function hidebottom(){
-
-          const div = document.querySelector(".cesium-viewer-bottom");
-              if (div) {
-                div.style.display = "none";
-              }
-
-              const div1 = document.querySelector(".cesium-viewer-animationContainer");
-              if (div1) {
-                div1.style.display = "none";
-              }
-
-        }
-
-
-      document.getElementById("showMobiles").onclick = toggleModelView;
-
-      document.getElementById("startButton").addEventListener("click", function() {
-          hidebottom();
-          document.getElementById("overlay").style.display = "none";
-        });
-
-
-
-       // initApp();
+      initApp();
 
 
   </script>

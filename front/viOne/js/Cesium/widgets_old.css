@@ -1217,7 +1217,7 @@ span.cesium-projectionPicker-wrapper {
   height: 100%;
 }
 .cesium-viewer-bottom {
-  display: block;
+  display: none;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -1245,6 +1245,7 @@ span.cesium-projectionPicker-wrapper {
   font-size: 14px;
 }
 .cesium-viewer-animationContainer {
+  display: none;
   position: absolute;
   bottom: 0;
   left: 0;

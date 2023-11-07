@@ -147,6 +147,54 @@ function vix_tt_transitionRectWidth(containerID) {
   }
 
 
+
+  // Funcion que posiciona divs
+
+  function vix_positionDiv(divId, x, y) {
+    const div = document.getElementById(divId);
+    if (div && div.style) {
+        div.style.position = 'absolute';
+        div.style.left = x + 'px';
+        div.style.top = y + 'px';
+    }
+}
+
+
+  // Funcion que da append de un div a otro
+
+  function vix_appendDivToParent(divId, parentId) {
+    // Find the parent element by its ID
+    const parentElement = document.getElementById(parentId);
+
+    if (parentElement) {
+        // Create a new div element
+        const newDiv = document.createElement('div');
+
+        // Set some content or styles for the new div (optional)
+        newDiv.textContent = '';
+       newDiv.style.backgroundColor = 'black';
+        newDiv.style.padding = '10px';
+
+        // Set an ID for the new div (optional)
+        newDiv.id = divId;
+
+        // Append the new div to the parent element
+        parentElement.appendChild(newDiv);
+    } else {
+        console.error(`Parent element with ID "${parentId}" not found.`);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
   // Funcion que distribuye un grupo de tooltips en la ventana
 
 
