@@ -76,7 +76,12 @@
    
   <!-- VENTANA DE DETALLE AL SELECCIONAR UN OBJETO DE ESTUDIO -->
 
-  <div id="detail" style="width: 800px; height: 600px;" >
+  <div id="detailcontainer"  style="width: 800px; height: 600px;">
+         
+  </div>
+
+  <div id="detail"  style="width: 800px; height: 600px;">
+         
   </div>
 
   <!-- MODULO PRINCIPAL -->
@@ -85,14 +90,16 @@
 
     // Formatea div de objetos para que sea una ventana :
     vix_tt_formatToolTip("#objects_menu","Objetos",500,350);
-    vix_positionDiv("objects_menu",10,10);
+    vix_positionDiv("objects_menu",10,50);
 
 
     // Formatea el DIV de detalle como una ventana flotante :
-   
-    //vix_appendDivToParent("detail", "detailContainer")
 
-    vix_tt_formatToolTip("#detail","Detalles",800,600);
+    vix_tt_formatToolTip("#detailcontainer","Detalles",800,600);
+    vix_tt_formatCanvas("#detail","Detalles",800,450);
+    vix_appendDivToParent("detail", "detailcontainer")
+    vix_positionDiv("detailcontainer",500,150);
+   
 
     
 

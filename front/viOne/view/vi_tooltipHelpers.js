@@ -168,15 +168,12 @@ function vix_tt_transitionRectWidth(containerID) {
 
     if (parentElement) {
         // Create a new div element
-        const newDiv = document.createElement('div');
+        const newDiv = document.getElementById(divId);
 
-        // Set some content or styles for the new div (optional)
-        newDiv.textContent = '';
-       newDiv.style.backgroundColor = 'black';
-        newDiv.style.padding = '10px';
 
-        // Set an ID for the new div (optional)
-        newDiv.id = divId;
+        newDiv.style.width = 800 + 'px'; // Set width in pixels
+        newDiv.style.height = 600 + 'px'; 
+        
 
         // Append the new div to the parent element
         parentElement.appendChild(newDiv);
@@ -592,6 +589,52 @@ function vix_tt_formatToolTip(divElement, titulo, width,  initialHeight) {
   });
 
   }
+
+
+
+
+  function vix_tt_formatCanvas(divElement, titulo, width,  initialHeight) {
+
+
+    $(divElement).html("");
+
+    var tooltipHeight = initialHeight || "auto";
+
+    var isCollapsed = false;
+    var originalHeight = $(divElement).css("height");
+
+    // Ajusta Estilo
+    $(divElement).css({
+      position: "fixed",
+
+      border: "1px solid #6e647b",
+      borderRadius: "7px",
+      backgroundColor: "rgba(0, 0, 0, 0.85)",
+      boxShadow: "rgba(0, 0, 0, .5) 19px 15px 24px",
+      width: width+"px", 
+      height: tooltipHeight,
+      //maxHeight: "80%",
+      minwidth: "400px",
+      overflow:"hidden",
+     
+    });
+
+        // Para ocultar las barras de desplazamiento personalizadas en navegadores WebKit
+      $(divElement).addClass('hide-scrollbar-webkit');
+
+    // Para ocultar las barras de desplazamiento en Firefox
+      $(divElement).addClass('hide-scrollbar-firefox');
+
+    // Para ocultar las barras de desplazamiento en IE y Edge
+      $(divElement).addClass('hide-scrollbar-ie-edge');
+
+
+   
+
+  }
+
+
+
 
 
   // Esta funcion formatea un DIV como menu (No hay boton de colapso, solo drag y hide)
