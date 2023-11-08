@@ -13,6 +13,10 @@
     "cesium": "^1.109.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "google-spreadsheet": "^3.3.0"
+    "google-spreadsheet": "^3.3.0",
+    "three": "^0.158.0"
+  },
+  "devDependencies": {
+    "vite": "^4.5.0"
   }
 }

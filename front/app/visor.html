@@ -1,47 +1,168 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title>Demo Pie</title>
-        <link href="https://fonts.googleapis.com/css?family=Cabin" rel="stylesheet" type="text/css">
-        <link href="https://fonts.googleapis.com/css?family=Coda:400,800" rel="stylesheet" type="text/css">
-        <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
-        <link rel="stylesheet" href="stylesheets/all.min.css">
-        <link rel="stylesheet" href="stylesheets/bootstrap.min.css" />
-        <link rel="stylesheet" href="stylesheets/style.css" />
+<html lang="en">
+	<head>
+		<title>three.js webgl - trackball controls</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+		<style>
+			body {
+				background-color: #ccc;
+				color: #000;
+			}
+			a {
+				color: #f00;
+			}
+		</style>
+	</head>
 
-        <script type="text/javascript" src="javascripts/config.js"></script>
-        <script type="text/javascript" src="javascripts/libs/jquery-3.1.1.min.js"></script>
-        <script type="text/javascript" src="javascripts/libs/popper.min.js"></script>
-        <script type="text/javascript" src="javascripts/libs/bootstrap.min.js"></script>
-        <script type="text/javascript" src="javascripts/libs/three.min.js"></script>
-        <!-- <script type="text/javascript" src="javascripts/libs/CSS3DRenderer.js"></script> -->
-        <script type="text/javascript" src="javascripts/libs/OrbitControls.js"></script>
-        <script type="text/javascript" src="javascripts/libs/TrackballControls.js"></script>
-        <script type="text/javascript" src="javascripts/libs/VOne.min.js"></script>
-        <script type="text/javascript" src="javascripts/libs/Tween.js"></script>
+	<body>
+		
 
-        <script type="text/javascript" src="javascripts/data.js"></script>
-        <!-- <script type="text/javascript" src="javascripts/rtClient.js"></script> -->
-        <!-- <script type="text/javascript" src="javascripts/rtManager.js"></script> -->
-        <script type="text/javascript" src="javascripts/helperFunctions.js"></script>
-        <script type="text/javascript" src="javascripts/visualization.js"></script>
-        <script type="text/javascript" src="javascripts/init.js"></script>
-    </head>
-    <body>
+		<div id="scene-container"></div>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "/app/build/three.module.js",
+					"three/addons/": "/app/build/jsm/"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+
+			import Stats from 'three/addons/libs/stats.module.js';
+			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
+			import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+
+			let perspectiveCamera, orthographicCamera, controls, scene, renderer, stats;
+
+			const params = {
+				orthographicCamera: false
+			};
+
+			const frustumSize = 400;
+
+			init();
+			animate();
+
+			function init() {
+
+				const aspect = window.innerWidth / window.innerHeight;
+
+				perspectiveCamera = new THREE.PerspectiveCamera( 60, aspect, 1, 1000 );
+				perspectiveCamera.position.z = 500;
+
+				orthographicCamera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 1000 );
+				orthographicCamera.position.z = 500;
+
+				// world
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0x000000 );
+				//scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
+
+				const geometry = new THREE.CircleGeometry( 5, 32 ); 
+                const material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } ); 
+                const circle = new THREE.Mesh( geometry, material );      
+
+				
+				scene.add( circle );
+
+				
+				// lights
+
+				const dirLight1 = new THREE.DirectionalLight( 0xffffff, 3 );
+				dirLight1.position.set( 1, 1, 1 );
+				scene.add( dirLight1 );
+
+				const dirLight2 = new THREE.DirectionalLight( 0x002288, 3 );
+				dirLight2.position.set( - 1, - 1, - 1 );
+				scene.add( dirLight2 );
+
+				const ambientLight = new THREE.AmbientLight( 0x555555 );
+				scene.add( ambientLight );
+
+				// renderer
+				const container = document.getElementById('scene-container');
 
 
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				container.appendChild( renderer.domElement );
 
-     <div id="escena" width="800"></div> 
+				stats = new Stats();
+				document.body.appendChild( stats.dom );
 
-  
+				//
 
- 
-        <script type="text/javascript">
+				
 
-            initApp();
+				//
 
-        </script>
+				window.addEventListener( 'resize', onWindowResize );
 
-    </body>
+				createControls( perspectiveCamera );
+
+			}
+
+			function createControls( camera ) {
+
+				controls = new TrackballControls( camera, renderer.domElement );
+
+				controls.rotateSpeed = 1.0;
+				controls.zoomSpeed = 1.2;
+				controls.panSpeed = 0.8;
+
+				controls.keys = [ 'KeyA', 'KeyS', 'KeyD' ];
+
+			}
+
+			function onWindowResize() {
+
+				const aspect = window.innerWidth / window.innerHeight;
+
+				perspectiveCamera.aspect = aspect;
+				perspectiveCamera.updateProjectionMatrix();
+
+				orthographicCamera.left = - frustumSize * aspect / 2;
+				orthographicCamera.right = frustumSize * aspect / 2;
+				orthographicCamera.top = frustumSize / 2;
+				orthographicCamera.bottom = - frustumSize / 2;
+				orthographicCamera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				controls.handleResize();
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				controls.update();
+
+				stats.update();
+
+				render();
+
+			}
+
+			function render() {
+
+				const camera = ( params.orthographicCamera ) ? orthographicCamera : perspectiveCamera;
+
+				renderer.render( scene, camera );
+
+			}
+
+
+		</script>
+
+	</body>
 </html>

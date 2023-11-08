@@ -58,6 +58,15 @@
 </head>
 <body>
 
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/app/build/three.module.js",
+        "three/addons/": "/app/build/jsm/"
+      }
+    }
+  </script>
+
 
 
   <div class="logo-container">
@@ -77,8 +86,6 @@
   <!-- VENTANA DE DETALLE AL SELECCIONAR UN OBJETO DE ESTUDIO -->
 
 
-    
-
   <div id="detail"  style="width: 800px; height: 600px;">       
   </div>
 
@@ -93,8 +100,8 @@
 
     // Formatea el DIV de detalle como una ventana flotante :
 
-    vix_tt_formatToolTip("#detail","Detalles",800,600);
-    
+    vix_tt_formatToolTip("#detail","Detalles",500,350);
+    vix_positionDiv("detail",70,60);
      
     
 
@@ -277,13 +284,33 @@
 
    
 
-      initApp();
+     // initApp();
 
 
   </script>
 
 
+<script type="module">
+ 
 
+ import { CustomGeometryRenderer } from '/viOne/view/vi_geometry_render.js';
+ import {vi_geometry_factory } from '/viOne/view/vi_geometry_factory.js';
+
+  const geom_factory = new vi_geometry_factory();
+
+  const customGeometry = geom_factory.createGeometry('Circle', [20,32]);
+  const renderer = new CustomGeometryRenderer('detail', customGeometry);
+
+
+  const esfera1 =  geom_factory.createGeometry('Sphere', [.2,32,32]);
+  const o1 = geom_factory.createObject(esfera1, {x:0, y:0, z:5} , 0x00ff00);
+
+  renderer.addGeometry(o1);
+
+
+</script>
+
+		
 
    
 
