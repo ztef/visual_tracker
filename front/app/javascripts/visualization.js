@@ -29,20 +29,32 @@ class Visualization{
             bodyBGAlpha: 1,
         });
 
+
+         
+
         let canvasWidth = $('#detail').width();
-        let canvasHeight = $('#detail').height()
+        let canvasHeight = $('#detail').height();
 
         let voneCanvas = $('canvas').last();
 
-        // voneCanvas.width(canvasWidth);
-        // voneCanvas.height(canvasHeight);
+        voneCanvas.width(canvasWidth);
+        voneCanvas.height(canvasHeight);
 
-        voneCanvas.css({ position: 'absolute', left: '0', top: '35px', height: `${canvasHeight - 35}px` });
+         
 
+         voneCanvas.css({ 
+            position: 'absolute',
+            left: '0',
+            top: '100px',
+            height: '600px' // Set the desired height here
+          });
+
+
+        // Append the canvas to the #detail element
         $('#detail').append(voneCanvas);
 
+        // Append the #detailView to the #detail element
         $('#detail').append($('#detailView'));
-
 
 
 
