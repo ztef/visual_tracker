@@ -1,10 +1,24 @@
+/*
+
+
+    VISUAL INTERACTION SYSTEMS
+
+    General Purpose 3DScene Renderer in top of Three.js 
+
+
+
+
+*/
+
 import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { PerspectiveCamera, OrthographicCamera } from 'three';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 
-export class GLTFRenderer {
+export class vi_3DSceneRenderer {
     constructor(containerId, useOrthographicCamera = false) {
         this.container = document.getElementById(containerId);
         this.objects = new Map();
@@ -70,6 +84,8 @@ export class GLTFRenderer {
             this.camera = new PerspectiveCamera(60, aspect, 0.1, 1000);
             this.camera.position.set(0.3570062481736582, 2.098977770789573, 0.8855386452745455);
             this.camera.lookAt(0.03575237012985329, -0.8778986564012193, -0.47750991311074553);
+            this.camera.near = 0.1; // Set a suitable value for the near clipping plane
+            this.camera.far = 10000; // Set a suitable value for the far clipping plane
         }
     
         this.camera.updateProjectionMatrix();
@@ -180,6 +196,66 @@ export class GLTFRenderer {
             console.log(error);
         });
     }
+
+    addGeometry(visualObject) {    
+        this.objects.set(visualObject.mesh, visualObject);
+        this.scene.add(visualObject.mesh);
+    }
+
+
+    loadOBJModel(objUrl, mtlUrl,  scale) {
+
+
+       
+        const objLoader = new OBJLoader();
+        const mtlLoader = new MTLLoader();
+
+        
+        mtlLoader.load(
+            mtlUrl,
+            (materials) => {
+                materials.preload();
+
+                objLoader.setMaterials(materials);
+
+                objLoader.load(
+                    objUrl,
+                    (object) => {
+                       
+                       
+                        this.scene.add(object);
+
+                        this.pointToModel(object);
+                      
+                      
+                    },
+                    
+                );
+            },
+           
+        );
+    }
+
+    pointToModel(model) {
+        // Calculate the center of the model's bounding box
+        const boundingBox = new THREE.Box3().setFromObject(model);
+        const center = boundingBox.getCenter(new THREE.Vector3());
+    
+        // Assuming `camera` is your THREE.PerspectiveCamera
+        const distance = this.calculateDistanceToModel(model); // You need to implement this function
+        this.camera.position.set(center.x, center.y, center.z + distance);
+        this.camera.lookAt(center);
+    }
+
+    calculateDistanceToModel(model) {
+        // You may want to calculate the appropriate distance based on the size of the model
+        // For example, you can use the diagonal length of the bounding box
+        const boundingBox = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3();
+        boundingBox.getSize(size);
+        return Math.max(size.x, size.y, size.z) * 2; // Adjust the multiplier as needed
+    }
+
 
 
 

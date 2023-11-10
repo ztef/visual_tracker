@@ -89,6 +89,9 @@
   <div id="detail"  style="width: 800px; height: 600px;">       
   </div>
 
+  <div id="detail1"  style="width: 800px; height: 600px;">       
+  </div>
+
   <!-- MODULO PRINCIPAL -->
   <script type="module">
 
@@ -102,6 +105,9 @@
 
     vix_tt_formatToolTip("#detail","Detalles",500,350);
     vix_positionDiv("detail",70,60);
+
+    vix_tt_formatToolTip("#detail1","Detalles",500,350);
+    vix_positionDiv("detail1",70,60);
      
     
 
@@ -314,10 +320,14 @@
   renderer.addGLTFModel('./assets/lacomer.glb', 10);
 */
 
-import { GLTFRenderer } from '/viOne/view/vi_scene_render.js';
+import { vi_3DSceneRenderer } from '/viOne/view/vi_scene_render.js';
 
-const gltfRenderer = new GLTFRenderer('detail');
-gltfRenderer.loadGLTFModelc('./assets/lacomerx.glb');
+const scene = new vi_3DSceneRenderer('detail');
+scene.loadGLTFModelc('./assets/lacomerx.glb');
+
+
+const scene1 = new vi_3DSceneRenderer('detail1');
+scene1.loadOBJModel('./assets/lacomerold.obj','./assets/lacomerold.mtl',1);
 
 
 
