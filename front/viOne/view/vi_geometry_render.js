@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+//import { OBJLoader2 } from 'three/addons/loaders/OBJLoader2.js';
+import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 export class CustomGeometryRenderer {
     constructor(containerId, customGeometry) {
@@ -7,9 +11,12 @@ export class CustomGeometryRenderer {
         this.customGeometry = customGeometry;
         this.init();
         this.animate();
+        this.objects = new Map();
     }
 
     init() {
+
+       
         const aspect = this.container.clientWidth / this.container.clientHeight;
 
         this.perspectiveCamera = new THREE.PerspectiveCamera(60, aspect, 1, 1000);
@@ -64,6 +71,43 @@ export class CustomGeometryRenderer {
         resizeObserver.observe(this.container);
 
 
+        this.container.addEventListener('click', (event) => {
+            const canvas = event.target;
+            const rect = canvas.getBoundingClientRect();
+        
+            // Calculate the mouse coordinates relative to the canvas
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+        
+            // Convert 2D mouse coordinates to 3D world coordinates
+            const mouse = new THREE.Vector2((x / canvas.clientWidth) * 2 - 1, - (y / canvas.clientHeight) * 2 + 1);
+        
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, this.perspectiveCamera);
+        
+            // Check for intersections with your geometries
+            const intersects = raycaster.intersectObjects(this.scene.children, true);
+        
+            if (intersects.length > 0) {
+                // The first object in the intersections array is the one that was clicked
+                const clickedObject = intersects[0].object;
+
+                const object = this.objects.get(clickedObject);
+
+                if (object !== undefined) {
+                    // Handle the selection or interaction with the clicked object using its ID
+                    console.log('Clicked object ID:', object.id);
+                }
+        
+                
+            }
+        });
+        
+    
+
+         
+
+
     }
 
     onWindowResize() {
@@ -90,8 +134,66 @@ export class CustomGeometryRenderer {
     }
 
 
-    addGeometry(mesh) {
-        
-        this.scene.add(mesh);
+
+    addGeometry(visualObject) {    
+        this.objects.set(visualObject.mesh, visualObject);
+        this.scene.add(visualObject.mesh);
     }
+
+
+    addOBJModel(objUrl, mtlUrl,  scale) {
+
+
+        const position = new THREE.Vector3(0, 0, 0);
+        const objLoader = new OBJLoader();
+        const mtlLoader = new MTLLoader();
+
+        
+        mtlLoader.load(
+            mtlUrl,
+            (materials) => {
+                materials.preload();
+
+                objLoader.setMaterials(materials);
+
+                objLoader.load(
+                    objUrl,
+                    (object) => {
+                        object.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                // Apply any custom material or color to the loaded object here
+                               //child.material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+                               child.material = materials.create(child.material.name);
+                            }
+                        });
+
+                        // Set the position and scale for the loaded object
+                        //object.position.copy(position);
+                        //object.scale.set(scale, scale, scale);
+
+                        // Add the loaded object to the scene
+                        this.scene.add(object);
+
+                        // Trigger the onLoad callback if provided
+                      
+                    },
+                    
+                );
+            },
+           
+        );
+    }
+
+
+
+    addGLTFModel(gltfUrl, scale) {
+        const loader = new GLTFLoader();
+    
+        loader.load(gltfUrl, (gltf) => {
+            this.scene.add(gltf.scene); // Use the 'this' keyword to refer to the class instance
+        }, undefined, (error) => {
+            console.log(error);
+        });
+    }
+
 }

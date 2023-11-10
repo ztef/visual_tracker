@@ -293,19 +293,33 @@
 <script type="module">
  
 
+ /*
  import { CustomGeometryRenderer } from '/viOne/view/vi_geometry_render.js';
  import {vi_geometry_factory } from '/viOne/view/vi_geometry_factory.js';
 
   const geom_factory = new vi_geometry_factory();
 
-  const customGeometry = geom_factory.createGeometry('Circle', [20,32]);
+  const customGeometry = geom_factory.createGeometry('Circle', [20,32,10,10]);
   const renderer = new CustomGeometryRenderer('detail', customGeometry);
 
 
   const esfera1 =  geom_factory.createGeometry('Sphere', [.2,32,32]);
   const o1 = geom_factory.createObject(esfera1, {x:0, y:0, z:5} , 0x00ff00);
+  const vo1 =  geom_factory.createVisualObject(o1,'objeto1');
 
-  renderer.addGeometry(o1);
+  renderer.addGeometry(vo1);
+
+
+  
+  renderer.addGLTFModel('./assets/lacomer.glb', 10);
+*/
+
+import { GLTFRenderer } from '/viOne/view/vi_scene_render.js';
+
+const gltfRenderer = new GLTFRenderer('detail');
+gltfRenderer.loadGLTFModelc('./assets/lacomerx.glb');
+
+
 
 
 </script>

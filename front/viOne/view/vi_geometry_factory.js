@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { vi_visualObject } from './vi_visual_object.js';
 
 
 export class vi_geometry_factory {
@@ -12,6 +13,17 @@ export class vi_geometry_factory {
               return new THREE.CircleGeometry(data[0], data[1]);
 
             break;
+
+            case 'Plane':
+  
+             
+              return new THREE.PlaneGeometry(data[0], data[1], data[2], data[3] );
+
+            break;
+
+
+          
+
 
            case 'Sphere':
             
@@ -42,6 +54,11 @@ export class vi_geometry_factory {
       
         return mesh;
     }
+
+        createVisualObject(mesh, id){
+
+            return new vi_visualObject(mesh,id);
+        }
 
  
 }

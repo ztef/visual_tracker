@@ -230,26 +230,23 @@ class vi_CesiumMap extends vi_Map {
           },
         });
 
-        /*
-        cylinderEntity.description =
+        
+        objectEntity.description =
   '\
 <img\
   width="50%"\
   style="float:left; margin: 0 1em 1em 0;"\
-  src="/docs/tutorials/creating-entities/Flag_of_Wyoming.svg"/>\
+  src="/app/assets/lacomer.png"/>\
 <p>\
-  Wyoming is a state in the mountain region of the Western \
-  United States.\
+  Principales Indicadores de la tienda \
+  Seleccionada.\
 </p>\
 <p>\
-  Wyoming is the 10th most extensive, but the least populous \
-  and the second least densely populated of the 50 United \
-  States. The western two thirds of the state is covered mostly \
-  with the mountain ranges and rangelands in the foothills of \
-  the eastern Rocky Mountains, while the eastern third of the \
-  state is high elevation prairie known as the High Plains. \
-  Cheyenne is the capital and the most populous city in Wyoming, \
-  with a population estimate of 63,624 in 2017.\
+  Ventas Mes : $0,00,00 \
+  RH : 45 Empleados \
+  Incidencias : 1 \
+  Out of Stock : \
+  .\
 </p>\
 <p>\
   Source: \
@@ -257,7 +254,7 @@ class vi_CesiumMap extends vi_Map {
     target="_blank"\
     href="http://en.wikipedia.org/wiki/Wyoming">Wikpedia</a>\
 </p>';
-*/
+
       
         this.objectEntities[id] = objectEntity; // Store the cylinder entity with its ID
       
