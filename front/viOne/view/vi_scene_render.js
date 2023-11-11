@@ -85,7 +85,7 @@ export class vi_3DSceneRenderer {
             this.camera.position.set(0.3570062481736582, 2.098977770789573, 0.8855386452745455);
             this.camera.lookAt(0.03575237012985329, -0.8778986564012193, -0.47750991311074553);
             this.camera.near = 0.1; // Set a suitable value for the near clipping plane
-            this.camera.far = 10000; // Set a suitable value for the far clipping plane
+            this.camera.far = 30000; // Set a suitable value for the far clipping plane
         }
     
         this.camera.updateProjectionMatrix();
@@ -148,15 +148,37 @@ export class vi_3DSceneRenderer {
     }
 
     selectObject(clientX, clientY) {
-        // Implement raycasting to select objects
-        const canvas = this.container;
+        // Get the canvas size and mouse coordinates
+       // const canvas = this.container;
+
+
+
+
+        const canvas = this.renderer.domElement;
         const rect = canvas.getBoundingClientRect();
         const x = clientX - rect.left;
         const y = clientY - rect.top;
+
+
+        console.log("x:",x," y:",y);
+    
+        // Convert 2D mouse coordinates to normalized device coordinates (-1 to 1)
         const mouse = new THREE.Vector2((x / canvas.clientWidth) * 2 - 1, - (y / canvas.clientHeight) * 2 + 1);
+    
+        // Create a 3D vector representing the mouse in world coordinates
+        const mouse3D = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+        mouse3D.unproject(this.camera);
+    
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(mouse, this.camera);
+    
+        // Set the raycaster's threshold for point clouds
+        raycaster.params.Points.threshold = 0.1;
+    
+        // Intersect with objects in the scene
         const intersects = raycaster.intersectObjects(this.scene.children, true);
+    
+        // Return the clicked object, if any
         return intersects.length > 0 ? intersects[0].object : null;
     }
 
@@ -165,6 +187,8 @@ export class vi_3DSceneRenderer {
         const customObject = this.objects.get(object);
         if (customObject) {
             console.log('Selected object ID:', customObject.id);
+        } else {
+            console.log('Selected  x object ID:', object);
         }
     }
 
