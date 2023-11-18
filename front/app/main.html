@@ -70,7 +70,7 @@
 
 
   <div class="logo-container">
-    <img src="./assets/lacomer.png" alt="Logo">
+    <img src="./assets/sundek.png" alt="Logo">
   </div>
 
 
@@ -129,7 +129,7 @@
       const remoteListenerFactory = new vi_RemoteListenerFactory();
 
    // CREA UN DATASOURCE para trips
-      const tripDataSource = new vi_DataSource('Firebase', './config/firebaseConfig.json');
+  //    const tripDataSource = new vi_DataSource('Firebase', './config/firebaseConfig.json');
 
    // CREA UN DATASOURCE PARA CEDIS   
       const cedisDataSource = new vi_DataSource('GoogleSheet', './config/googlesheetconfig.json');
@@ -153,7 +153,7 @@
         
       // Carga Mapa y activa listener continuo
       map.load().then(()=>{
-            mobilesRemoteListener = remoteListenerFactory.createRemoteListener(tripDataSource,objectModel);
+         //   mobilesRemoteListener = remoteListenerFactory.createRemoteListener(tripDataSource,objectModel);
             cedisRemoteListener = remoteListenerFactory.createRemoteListener(cedisDataSource,objectModel);
           })
    
@@ -239,10 +239,10 @@
       const html = `
       <th style="color: white;">ID</th>
       <th style="color: white;">Collection</th>
-      <th style="color: white;">Mobile</th>
-      <th style="color: white;">Destino</th>
-      <th style="color: white;">Trip State</th>
-      <th style="color: white;">Unidad</th>
+      <th style="color: white;">Facility</th>
+      <th style="color: white;">Location</th>
+      <th style="color: white;">Alerts</th>
+      <th style="color: white;">Contact</th>
       `;
 
       return (html);
@@ -275,12 +275,12 @@
           <circle cx="10" cy="10" r="8" fill="${circleColor}" />
         </svg>
       </td>
-      <td style="color: white;">Mobile ${collection}</td>
+      <td style="color: white;">Type. ${collection}</td>
 
-      <td style="color: white;">Mobile ${id}</td>
-      <td style="color: white;">Destino : ${destination}</td>
-      <td style="color: white;">Trip State: ${tripState}</td>
-      <td style="color: white;">Unidad : ${unit}</td>  
+      <td style="color: white;">Facility No. ${id}</td>
+      <td style="color: white;"> ${destination}</td>
+      <td style="color: white;"> ${name}</td>
+      
       `;
 
       return (html);
@@ -328,8 +328,8 @@ scene.loadGLTFModelc('./assets/lacomerx.glb');
 
 const scene1 = new vi_3DSceneRenderer('detail1');
 //scene1.loadOBJModel('./assets/lacomerold.obj','./assets/lacomerold.mtl',1);
-scene1.loadOBJModel('./assets/tiendas1.obj','./assets/tiendas1.mtl',1);
-
+//scene1.loadOBJModel('./assets/tiendas1.obj','./assets/tiendas1.mtl',1);
+scene1.loadOBJModel('./assets/sundek_inventory.obj','./assets/sundek_inventory.mtl',1);
 
 
 </script>

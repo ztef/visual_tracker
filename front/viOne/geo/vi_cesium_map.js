@@ -236,7 +236,7 @@ class vi_CesiumMap extends vi_Map {
 <img\
   width="50%"\
   style="float:left; margin: 0 1em 1em 0;"\
-  src="/app/assets/lacomer.png"/>\
+  src="/app/assets/sundek.png"/>\
 <p>\
   Principales Indicadores de la tienda \
   Seleccionada.\
